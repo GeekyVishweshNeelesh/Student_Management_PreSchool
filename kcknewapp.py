@@ -691,22 +691,25 @@ def handle_student_menu(menu):
     elif menu == "📥 Import Students":
         st.header("📥 Import Students from Excel")
         
-        st.info("📋 **Excel File Requirements:**\n"
-                "- Must have columns: Name, Standard, Blood_Group, Address, Aadhar_Details, Age\n"
-                "- Standard must be one of: Playground/Nursery/Jr.KG/Sr.KG - Section A/B\n"
+                        st.info("📋 **Excel File Requirements:**\n"
+                "- Must have columns: Name, Address, Age, Blood_Group, Father_Phone, Mother_Phone, Aadhar_Details, Standard\n"
+                "- Standard must be: Playgroup, Nursery, Junior KG, Senior KG, 1st, or 2nd\n"
                 "- Blood Group: A+, A-, B+, B-, O+, O-, AB+, AB-\n"
                 "- Age: 2-10\n"
-                "- Aadhar: 12 digits")
+                "- Aadhar: 12 digits\n"
+                "- Phone: 10 digits (Indian mobile)")
         
         st.subheader("📥 Step 1: Download Template")
         
         template_df = pd.DataFrame({
             'Name': ['Sample Student'],
-            'Standard': ['Playground - Section A'],
+            'Address': ['Sample Address, City'],
+            'Age': [5],
             'Blood_Group': ['A+'],
-            'Address': ['Sample Address'],
+            'Father_Phone': ['9876543210'],
+            'Mother_Phone': ['9876543211'],
             'Aadhar_Details': ['123456789012'],
-            'Age': [5]
+            'Standard': ['Playgroup']
         })
         
         buffer = BytesIO()
@@ -734,7 +737,7 @@ def handle_student_menu(menu):
                 st.dataframe(import_df.head(10), use_container_width=True)
                 st.info(f"Total rows in file: {len(import_df)}")
                 
-                required_columns = ['Name', 'Standard', 'Blood_Group', 'Address', 'Aadhar_Details', 'Age']
+                required_columns = ['Name', 'Address', 'Age', 'Blood_Group', 'Father_Phone', 'Mother_Phone', 'Aadhar_Details', 'Standard']
                 missing_columns = [col for col in required_columns if col not in import_df.columns]
                 
                 if missing_columns:
@@ -765,6 +768,12 @@ def handle_student_menu(menu):
                         
                         if not validate_aadhar(str(row['Aadhar_Details'])):
                             errors.append("Invalid Aadhar (must be 12 digits)")
+                        
+                        if not validate_phone(str(row['Father_Phone'])):
+                            errors.append("Invalid father's phone number")
+                        
+                        if not validate_phone(str(row['Mother_Phone'])):
+                            errors.append("Invalid mother's phone number")
                         
                         if errors:
                             invalid_rows.append({'Row': idx + 2, 'Errors': ', '.join(errors)})
@@ -813,11 +822,13 @@ def handle_student_menu(menu):
                                     new_students.append({
                                         'Student_ID': new_id,
                                         'Name': row['Name'],
-                                        'Standard': row['Standard'],
-                                        'Blood_Group': row['Blood_Group'],
                                         'Address': row['Address'],
+                                        'Age': int(row['Age']),
+                                        'Blood_Group': row['Blood_Group'],
+                                        'Father_Phone': row['Father_Phone'],
+                                        'Mother_Phone': row['Mother_Phone'],
                                         'Aadhar_Details': row['Aadhar_Details'],
-                                        'Age': int(row['Age'])
+                                        'Standard': row['Standard']
                                     })
                                 
                                 new_df = pd.DataFrame(new_students)
