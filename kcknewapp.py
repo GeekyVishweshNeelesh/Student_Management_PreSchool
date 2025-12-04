@@ -245,13 +245,13 @@ def main():
 """, unsafe_allow_html=True)
 
 st.sidebar.title("📚 Navigation")
-    main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
-    if main_menu == "👨‍🎓 Student Management":
-        student_menu = st.sidebar.radio("Student Operations:", ["📊 View Students", "➕ Add Student", "✏️ Update Student", "🗑️ Delete Student", "📥 Import Students", "📈 Student Analytics"])
-        handle_student_menu(student_menu)
-    else:
-        fees_menu = st.sidebar.radio("Fees Operations:", ["💵 Collect Payment", "📋 View Payments", "🔍 Student Fee History", "⚙️ Fee Structure", "📊 Fees Dashboard", "📄 Reports", "⚠️ Defaulters"])
-        handle_fees_menu(fees_menu)
+main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
+if main_menu == "👨‍🎓 Student Management":
+    student_menu = st.sidebar.radio("Student Operations:", ["📊 View Students", "➕ Add Student", "✏️ Update Student", "🗑️ Delete Student", "📥 Import Students", "📈 Student Analytics"])
+    handle_student_menu(student_menu)
+else:
+    fees_menu = st.sidebar.radio("Fees Operations:", ["💵 Collect Payment", "📋 View Payments", "🔍 Student Fee History", "⚙️ Fee Structure", "📊 Fees Dashboard", "📄 Reports", "⚠️ Defaulters"])
+    handle_fees_menu(fees_menu)
 
 def handle_student_menu(menu):
     students_df = load_students()
