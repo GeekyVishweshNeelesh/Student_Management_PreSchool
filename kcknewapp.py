@@ -480,8 +480,8 @@ def main():
     st.sidebar.markdown('''<style>
         [data-testid="stSidebar"]{font-size:36px}
         [data-testid="stSidebar"] label{font-size:36px !important; font-weight:700}
-        [data-testid="stSidebar"] .stRadio > label{font-size:60px !important; font-weight:900; color:#1f77b4; text-shadow:2px 2px 4px rgba(0,0,0,0.2); letter-spacing:0.5px}
-        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:48px !important; padding:14px 0; font-weight:900; text-shadow:1px 1px 2px rgba(0,0,0,0.1)}
+        [data-testid="stSidebar"] .stRadio > label{font-size:52px !important; font-weight:900; color:#0d47a1; text-shadow:3px 3px 6px rgba(0,0,0,0.3), 1px 1px 0px rgba(0,0,0,0.5); letter-spacing:1px; -webkit-text-stroke:0.5px rgba(0,0,0,0.2)}
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:48px !important; padding:14px 0; font-weight:900; text-shadow:2px 2px 4px rgba(0,0,0,0.2); -webkit-text-stroke:0.3px rgba(0,0,0,0.1)}
         [data-testid="stSidebar"] h1{font-size:38px !important; font-weight:700}
     </style>''', unsafe_allow_html=True)
     st.sidebar.title("📚 Navigation")
