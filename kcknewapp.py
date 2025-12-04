@@ -226,19 +226,25 @@ def main():
     st.sidebar.markdown("""
     <style>
     [data-testid="stSidebar"] {
-        font-size: 28px;
+        font-size: 24px;
     }
     [data-testid="stSidebar"] label {
-        font-size: 28px !important;
+        font-size: 24px !important;
     }
     [data-testid="stSidebar"] .stRadio label {
-        font-size: 28px !important;
+        font-size: 24px !important;
     }
     [data-testid="stSidebar"] h1 {
-        font-size: 36px !important;
+        font-size: 32px !important;
+    }
+    [data-testid="stSidebar"] div[role="radiogroup"] label {
+        font-size: 24px !important;
+        line-height: 1.8 !important;
     }
     </style>
 """, unsafe_allow_html=True)
+
+st.sidebar.title("📚 Navigation")
     st.sidebar.title("📚 Navigation")
     main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
     if main_menu == "👨‍🎓 Student Management":
