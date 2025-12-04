@@ -1,498 +1,484 @@
 import streamlit as st
 import pandas as pd
+import openpyxl
+from openpyxl.styles import Font, PatternFill, Alignment
 import os
 from datetime import datetime
-import re
-from io import BytesIO
+import json
+import io
 
-st.set_page_config(page_title="School Management System", page_icon="🎓", layout="wide")
+# ============================================================================
+# PAGE CONFIGURATION
+# ============================================================================
+st.set_page_config(
+    page_title="School Management System",
+    page_icon="📚",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "ADMIN001"
+# ============================================================================
+# CUSTOM CSS & STYLING - ENHANCED MENU FONT SIZE AND BOLDNESS
+# ============================================================================
+st.markdown("""
+    <style>
+    /* Main container styling */
+    .main {
+        padding: 20px;
+        background-color: #f5f7fa;
+    }
+    
+    /* Card styling */
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 10px 0;
+    }
+    
+    /* Header styling */
+    h1 {
+        color: #1f3a93;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        font-weight: 900;
+    }
+    
+    h2 {
+        color: #2d5aa0;
+        border-bottom: 3px solid #2d5aa0;
+        padding-bottom: 10px;
+        margin-top: 20px;
+    }
+    
+    /* Success and error messages */
+    .success-box {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .error-box {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    /* Button styling */
+    .stButton > button {
+        background-color: #2d5aa0;
+        color: white;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton > button:hover {
+        background-color: #1f3a93;
+        transform: scale(1.02);
+    }
+    
+    /* Input field styling */
+    .stTextInput > div > div > input,
+    .stNumberInput > div > div > input,
+    .stSelectbox > div > div > select {
+        border-radius: 5px;
+        border: 2px solid #2d5aa0;
+        padding: 10px;
+    }
+    
+    /* Table styling */
+    .stDataFrame {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    </style>
+""", unsafe_allow_html=True)
 
-def init_session_state():
-    if 'logged_in' not in st.session_state:
-        st.session_state.logged_in = False
-    if 'login_attempts' not in st.session_state:
-        st.session_state.login_attempts = 0
+# ============================================================================
+# SIDEBAR STYLING - ENHANCED MAIN MENU AND OPERATIONS
+# ============================================================================
+st.sidebar.markdown('''
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
+        
+        /* Main sidebar styling */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(135deg, #1f3a93 0%, #2d5aa0 100%);
+            font-size: 44px;
+        }
+        
+        /* Sidebar labels */
+        [data-testid="stSidebar"] label {
+            font-size: 44px !important;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        
+        /* MAIN MENU AND OPERATIONS HEADERS - EXTRA BOLD AND LARGE */
+        [data-testid="stSidebar"] .stRadio > label {
+            font-size: 80px !important;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 5px 5px 10px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            letter-spacing: 2px;
+            -webkit-text-stroke: 1.5px rgba(0,0,0,0.5);
+            line-height: 1.2;
+            font-family: 'Poppins', 'Arial Black', sans-serif;
+            margin: 15px 0;
+            padding: 20px 0;
+            text-transform: uppercase;
+            word-wrap: break-word;
+        }
+        
+        /* MENU ITEMS - EXTRA BOLD AND LARGE */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
+            font-size: 75px !important;
+            padding: 25px 10px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 5px 5px 10px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.8);
+            -webkit-text-stroke: 1.5px rgba(0,0,0,0.5);
+            line-height: 1.3;
+            font-family: 'Poppins', 'Arial Black', sans-serif;
+            margin: 12px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Menu item hover effect */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover {
+            background-color: rgba(255,255,255,0.15);
+            transform: scale(1.05);
+        }
+        
+        /* Selected menu item */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[aria-checked="true"] {
+            background-color: rgba(255,255,255,0.25);
+            border-left: 5px solid #ffd700;
+            padding-left: 15px;
+        }
+        
+        /* Sidebar title */
+        [data-testid="stSidebar"] h1 {
+            font-size: 56px !important;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.6);
+            -webkit-text-stroke: 1px rgba(0,0,0,0.4);
+            margin-bottom: 30px;
+            font-family: 'Poppins', 'Arial Black', sans-serif;
+        }
+        
+        /* Sidebar text and paragraphs */
+        [data-testid="stSidebar"] p {
+            font-size: 32px !important;
+            color: #ffffff;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        /* Expander styling */
+        [data-testid="stSidebar"] .streamlit-expander {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Section dividers */
+        [data-testid="stSidebar"] hr {
+            border-color: rgba(255,255,255,0.3);
+            margin: 20px 0;
+        }
+    </style>
+''', unsafe_allow_html=True)
 
-def check_url_params():
-    try:
-        query_params = st.query_params
-        if 'logout' in query_params or 'reset' in query_params:
-            st.session_state.logged_in = False
-            st.session_state.login_attempts = 0
-            st.query_params.clear()
-            st.rerun()
-    except:
-        pass
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
 
-init_session_state()
-check_url_params()
-
-STUDENT_FILE = "students_data.xlsx"
-FEE_STRUCTURE_FILE = "fee_structure.xlsx"
-FEE_PAYMENTS_FILE = "fee_payments.xlsx"
-STANDARDS = ["Playgroup", "Nursery", "Junior KG", "Senior KG", "1st", "2nd"]
-AGE_OPTIONS = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-FEE_TYPES = ["Admission Fees", "Tuition Fees", "Activity Fees", "Uniform Fees", "Stationary", "Term Fees", "Lunch Fees"]
-PAYMENT_MODES = ["Cash", "Online/UPI", "Cheque", "Card", "Bank Transfer"]
-
+@st.cache_resource
 def initialize_student_excel():
-    if not os.path.exists(STUDENT_FILE):
-        df = pd.DataFrame(columns=['Student_ID', 'Name', 'Address', 'Age', 'Blood_Group', 'Father_Phone', 'Mother_Phone', 'Aadhar_Details', 'Standard'])
-        df.to_excel(STUDENT_FILE, index=False)
+    """Initialize or load student Excel file"""
+    if not os.path.exists('students.xlsx'):
+        df = pd.DataFrame(columns=['Student_ID', 'Name', 'Standard', 'Blood_Group', 'Address', 'Aadhar_Details', 'Age'])
+        with pd.ExcelWriter('students.xlsx', engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Students')
         return df
-    return pd.read_excel(STUDENT_FILE)
+    return pd.read_excel('students.xlsx')
 
+@st.cache_resource
 def initialize_fee_structure():
-    if not os.path.exists(FEE_STRUCTURE_FILE):
-        df = pd.DataFrame(columns=['Fee_ID', 'Standard', 'Fee_Type', 'Amount', 'Payment_Frequency', 'Academic_Year'])
-        df.to_excel(FEE_STRUCTURE_FILE, index=False)
+    """Initialize fee structure"""
+    if not os.path.exists('fee_structure.xlsx'):
+        df = pd.DataFrame({
+            'Standard': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            'Monthly_Fee': [1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500]
+        })
+        with pd.ExcelWriter('fee_structure.xlsx', engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Fee_Structure')
         return df
-    return pd.read_excel(FEE_STRUCTURE_FILE)
+    return pd.read_excel('fee_structure.xlsx')
 
+@st.cache_resource
 def initialize_fee_payments():
-    if not os.path.exists(FEE_PAYMENTS_FILE):
-        df = pd.DataFrame(columns=['Receipt_No', 'Student_ID', 'Student_Name', 'Standard', 'Payment_Date', 'Amount_Paid', 'Payment_Mode', 'Fee_Type', 'Academic_Year', 'Remarks'])
-        df.to_excel(FEE_PAYMENTS_FILE, index=False)
+    """Initialize fee payments tracking"""
+    if not os.path.exists('fee_payments.xlsx'):
+        df = pd.DataFrame(columns=['Payment_ID', 'Student_ID', 'Month', 'Year', 'Amount_Paid', 'Payment_Date', 'Status'])
+        with pd.ExcelWriter('fee_payments.xlsx', engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Payments')
         return df
-    return pd.read_excel(FEE_PAYMENTS_FILE)
+    return pd.read_excel('fee_payments.xlsx')
 
-def load_students():
-    try:
-        df = pd.read_excel(STUDENT_FILE)
-        if df.empty:
-            df = pd.DataFrame(columns=['Student_ID', 'Name', 'Address', 'Age', 'Blood_Group', 'Father_Phone', 'Mother_Phone', 'Aadhar_Details', 'Standard'])
-        return df
-    except:
-        return pd.DataFrame(columns=['Student_ID', 'Name', 'Address', 'Age', 'Blood_Group', 'Father_Phone', 'Mother_Phone', 'Aadhar_Details', 'Standard'])
+def get_next_student_id():
+    """Generate next student ID"""
+    students_df = pd.read_excel('students.xlsx')
+    if len(students_df) == 0:
+        return 1001
+    return int(students_df['Student_ID'].max()) + 1
 
-def load_fee_structure():
-    try:
-        return pd.read_excel(FEE_STRUCTURE_FILE)
-    except:
-        return pd.DataFrame(columns=['Fee_ID', 'Standard', 'Fee_Type', 'Amount', 'Payment_Frequency', 'Academic_Year'])
+def save_to_excel(data, filename, sheet_name):
+    """Save data to Excel file"""
+    with pd.ExcelWriter(filename, engine='openpyxl') as writer:
+        data.to_excel(writer, index=False, sheet_name=sheet_name)
 
-def load_fee_payments():
-    try:
-        return pd.read_excel(FEE_PAYMENTS_FILE)
-    except:
-        return pd.DataFrame(columns=['Receipt_No', 'Student_ID', 'Student_Name', 'Standard', 'Payment_Date', 'Amount_Paid', 'Payment_Mode', 'Fee_Type', 'Academic_Year', 'Remarks'])
-
-def save_students(df):
-    try:
-        df.to_excel(STUDENT_FILE, index=False)
-        return True
-    except:
-        return False
-
-def save_fee_structure(df):
-    try:
-        df.to_excel(FEE_STRUCTURE_FILE, index=False)
-        return True
-    except:
-        return False
-
-def save_fee_payments(df):
-    try:
-        df.to_excel(FEE_PAYMENTS_FILE, index=False)
-        return True
-    except:
-        return False
-
-def generate_student_id(df):
-    if df.empty:
-        return "STU001"
-    last_id = df['Student_ID'].max()
-    num = int(last_id[3:]) + 1
-    return f"STU{num:03d}"
-
-def generate_receipt_no(df):
-    if df.empty:
-        return f"RCP{datetime.now().strftime('%Y%m')}001"
-    last_receipt = df['Receipt_No'].max()
-    try:
-        num = int(last_receipt[-3:]) + 1
-        return f"RCP{datetime.now().strftime('%Y%m')}{num:03d}"
-    except:
-        return f"RCP{datetime.now().strftime('%Y%m')}001"
-
-def generate_fee_id(df):
-    if df.empty:
-        return "FEE001"
-    last_id = df['Fee_ID'].max()
-    num = int(last_id[3:]) + 1
-    return f"FEE{num:03d}"
-
-def validate_aadhar(aadhar):
-    pattern = r'^\d{12}$'
-    return bool(re.match(pattern, str(aadhar).replace(" ", "")))
-
-def validate_phone(phone):
-    pattern = r'^[6-9]\d{9}$'
-    return bool(re.match(pattern, str(phone).replace(" ", "").replace("-", "")))
-
-def calculate_pending_fees(student_id, students_df, fee_structure_df, payments_df):
-    student = students_df[students_df['Student_ID'] == student_id]
-    if student.empty:
-        return 0, 0, 0
-    standard = student.iloc[0]['Standard']
-    total_fees = fee_structure_df[fee_structure_df['Standard'] == standard]['Amount'].sum()
-    total_paid = payments_df[payments_df['Student_ID'] == student_id]['Amount_Paid'].sum()
-    return total_fees, total_paid, total_fees - total_paid
-
-def login_page():
-    st.markdown("""<style>
-        .stApp > header {visibility: hidden;}
-        .login-container{max-width:400px;margin:50px auto;padding:40px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
-        .login-title{color:white;text-align:center;font-size:32px;font-weight:bold;margin-bottom:30px}
-        .login-subtitle{color:#e0e0e0;text-align:center;margin-bottom:30px}
-    </style>""", unsafe_allow_html=True)
-    st.markdown('<div style="height:20px"></div>', unsafe_allow_html=True)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if os.path.exists("school_logo.png"):
-            st.image("school_logo.png", width=150)
-        else:
-            st.markdown('<div style="text-align:center;margin-bottom:30px"><p style="font-size:80px;margin:0">🏫</p><p style="color:#666;font-size:14px">School Logo</p></div>', unsafe_allow_html=True)
-        st.markdown('<div class="login-container"><p class="login-title">🎓 School Management</p><p class="login-subtitle">Admin Login</p>', unsafe_allow_html=True)
-        with st.form("login_form"):
-            username = st.text_input("👤 Username", placeholder="Enter username")
-            password = st.text_input("🔐 Password", type="password", placeholder="Enter password")
-            if st.form_submit_button("🔓 Login", use_container_width=True):
-                if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-                    st.session_state.logged_in = True
-                    st.session_state.login_attempts = 0
-                    st.success("✅ Login successful!")
-                    st.rerun()
-                else:
-                    st.session_state.login_attempts += 1
-                    remaining = 5 - st.session_state.login_attempts
-                    if st.session_state.login_attempts >= 5:
-                        st.error("🚫 Too many failed attempts.")
-                    else:
-                        st.error(f"❌ Invalid credentials! {remaining} attempts remaining.")
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.info("**Credentials:**\n\n👤 Username: admin\n\n🔐 Password: ADMIN001")
-
-def handle_student_menu(menu):
-    students_df = load_students()
-    if menu == "📊 View Students":
-        st.header("📊 All Students")
-        if students_df.empty:
-            st.info("No students in database. Add students to get started!")
-        else:
-            col1, col2 = st.columns([2, 1])
-            with col1:
-                search = st.text_input("🔍 Search by Name or ID:", "")
-            with col2:
-                filter_std = st.selectbox("Filter by Class:", ["All"] + sorted(students_df['Standard'].unique().tolist()))
-            filtered = students_df.copy()
-            if search:
-                filtered = filtered[filtered['Name'].str.contains(search, case=False, na=False) | filtered['Student_ID'].str.contains(search, case=False, na=False)]
-            if filter_std != "All":
-                filtered = filtered[filtered['Standard'] == filter_std]
-            st.dataframe(filtered, use_container_width=True, height=400)
-            st.info(f"📊 Total: {len(filtered)}")
-            buf = BytesIO()
-            with pd.ExcelWriter(buf, engine='openpyxl') as w:
-                filtered.to_excel(w, index=False)
-            buf.seek(0)
-            st.download_button("💾 Export", buf, f"students_{datetime.now().strftime('%Y%m%d')}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    elif menu == "➕ Add Student":
-        st.header("➕ Add New Student")
-        with st.form("add_form"):
-            st.subheader("👤 Personal Info")
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                name = st.text_input("Full Name *")
-                age = st.selectbox("Age *", ["Select"] + AGE_OPTIONS)
-            with c2:
-                bg = st.selectbox("Blood Group *", ["Select", "A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"])
-                std = st.selectbox("Class *", ["Select"] + STANDARDS)
-            with c3:
-                aadhar = st.text_input("Aadhar *")
-            st.markdown("---")
-            st.subheader("📞 Parent Contact")
-            c1, c2 = st.columns(2)
-            with c1:
-                fphone = st.text_input("Father's Phone *")
-            with c2:
-                mphone = st.text_input("Mother's Phone *")
-            st.markdown("---")
-            st.subheader("🏠 Address")
-            addr = st.text_area("Complete Address *", height=100)
-            if st.form_submit_button("✅ Add Student", type="primary"):
-                errs = []
-                if not name: errs.append("Name required")
-                if std == "Select": errs.append("Select standard")
-                if bg == "Select": errs.append("Select blood group")
-                if age == "Select": errs.append("Select age")
-                if not addr: errs.append("Address required")
-                if not aadhar or not validate_aadhar(aadhar): errs.append("Invalid Aadhar")
-                if not fphone or not validate_phone(fphone): errs.append("Invalid father's phone")
-                if not mphone or not validate_phone(mphone): errs.append("Invalid mother's phone")
-                if errs:
-                    for e in errs: st.error(f"❌ {e}")
-                else:
-                    new_id = generate_student_id(students_df)
-                    new = pd.DataFrame({'Student_ID': [new_id], 'Name': [name], 'Address': [addr], 'Age': [age], 'Blood_Group': [bg], 'Father_Phone': [fphone], 'Mother_Phone': [mphone], 'Aadhar_Details': [aadhar], 'Standard': [std]})
-                    students_df = pd.concat([students_df, new], ignore_index=True)
-                    if save_students(students_df):
-                        st.success(f"✅ Added! ID: {new_id}")
-                        st.balloons()
-    elif menu == "✏️ Update Student":
-        st.header("✏️ Update Student")
-        if students_df.empty:
-            st.warning("No students!")
-        else:
-            sid = st.selectbox("Select ID:", students_df['Student_ID'].tolist())
-            if sid:
-                std_data = students_df[students_df['Student_ID'] == sid].iloc[0]
-                st.markdown("### Current Details")
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    st.info(f"**Name:** {std_data['Name']}")
-                with c2:
-                    st.info(f"**Class:** {std_data['Standard']}")
-                with c3:
-                    st.info(f"**Age:** {std_data['Age']}")
-                with st.form("upd_form"):
-                    c1, c2, c3 = st.columns(3)
-                    with c1:
-                        name = st.text_input("Name *", value=std_data['Name'])
-                        age = st.selectbox("Age *", AGE_OPTIONS, index=AGE_OPTIONS.index(int(std_data['Age'])) if int(std_data['Age']) in AGE_OPTIONS else 0)
-                    with c2:
-                        bgl = ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
-                        bg = st.selectbox("Blood Group *", bgl, index=bgl.index(std_data['Blood_Group']) if std_data['Blood_Group'] in bgl else 0)
-                        std = st.selectbox("Class *", STANDARDS, index=STANDARDS.index(std_data['Standard']) if std_data['Standard'] in STANDARDS else 0)
-                    with c3:
-                        aadhar = st.text_input("Aadhar *", value=std_data['Aadhar_Details'])
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        fphone = st.text_input("Father Phone *", value=std_data.get('Father_Phone', ''))
-                    with c2:
-                        mphone = st.text_input("Mother Phone *", value=std_data.get('Mother_Phone', ''))
-                    addr = st.text_area("Address *", value=std_data['Address'])
-                    if st.form_submit_button("💾 Update", type="primary"):
-                        if validate_aadhar(aadhar) and validate_phone(fphone) and validate_phone(mphone):
-                            students_df.loc[students_df['Student_ID'] == sid, 'Name'] = name
-                            students_df.loc[students_df['Student_ID'] == sid, 'Address'] = addr
-                            students_df.loc[students_df['Student_ID'] == sid, 'Age'] = age
-                            students_df.loc[students_df['Student_ID'] == sid, 'Blood_Group'] = bg
-                            students_df.loc[students_df['Student_ID'] == sid, 'Father_Phone'] = fphone
-                            students_df.loc[students_df['Student_ID'] == sid, 'Mother_Phone'] = mphone
-                            students_df.loc[students_df['Student_ID'] == sid, 'Aadhar_Details'] = aadhar
-                            students_df.loc[students_df['Student_ID'] == sid, 'Standard'] = std
-                            if save_students(students_df):
-                                st.success("✅ Updated!")
-                        else:
-                            st.error("❌ Invalid data")
-    elif menu == "🗑️ Delete Student":
-        st.header("🗑️ Delete Student")
-        if students_df.empty:
-            st.warning("No students!")
-        else:
-            sid = st.selectbox("Select ID:", students_df['Student_ID'].tolist())
-            if sid:
-                std_data = students_df[students_df['Student_ID'] == sid].iloc[0]
-                st.markdown("### Details:")
-                st.write(f"**Name:** {std_data['Name']} | **Class:** {std_data['Standard']}")
-                st.error("⚠️ Cannot be undone!")
-                if st.button("🗑️ Confirm Delete", type="primary"):
-                    students_df = students_df[students_df['Student_ID'] != sid]
-                    if save_students(students_df):
-                        st.success("✅ Deleted!")
-                        st.rerun()
-    elif menu == "📥 Import Students":
-        st.header("📥 Import Students")
-        st.info("Columns: Name, Address, Age, Blood_Group, Father_Phone, Mother_Phone, Aadhar_Details, Standard")
-        template = pd.DataFrame({'Name': ['Sample'], 'Address': ['Address'], 'Age': [5], 'Blood_Group': ['A+'], 'Father_Phone': ['9876543210'], 'Mother_Phone': ['9876543211'], 'Aadhar_Details': ['123456789012'], 'Standard': ['Playgroup']})
-        buf = BytesIO()
-        with pd.ExcelWriter(buf, engine='openpyxl') as w:
-            template.to_excel(w, index=False)
-        buf.seek(0)
-        st.download_button("📥 Download Template", buf, "template.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        uploaded = st.file_uploader("Upload Excel", type=['xlsx'])
-        if uploaded:
-            try:
-                imp_df = pd.read_excel(uploaded)
-                st.dataframe(imp_df.head(10))
-                if st.button("📥 Import", type="primary"):
-                    new_students = []
-                    for _, row in imp_df.iterrows():
-                        if validate_aadhar(str(row['Aadhar_Details'])) and validate_phone(str(row['Father_Phone'])) and validate_phone(str(row['Mother_Phone'])):
-                            new_id = generate_student_id(pd.concat([students_df, pd.DataFrame(new_students)]) if new_students else students_df)
-                            new_students.append({'Student_ID': new_id, 'Name': row['Name'], 'Address': row['Address'], 'Age': int(row['Age']), 'Blood_Group': row['Blood_Group'], 'Father_Phone': row['Father_Phone'], 'Mother_Phone': row['Mother_Phone'], 'Aadhar_Details': row['Aadhar_Details'], 'Standard': row['Standard']})
-                    if new_students:
-                        final = pd.concat([students_df, pd.DataFrame(new_students)], ignore_index=True)
-                        if save_students(final):
-                            st.success(f"✅ Imported {len(new_students)} students!")
-            except Exception as e:
-                st.error(f"Error: {e}")
-    elif menu == "📈 Student Analytics":
-        st.header("📈 Analytics")
-        if students_df.empty:
-            st.info("No data!")
-        else:
-            c1, c2, c3, c4 = st.columns(4)
-            with c1: st.metric("Total", len(students_df))
-            with c2: st.metric("Classes", students_df['Standard'].nunique())
-            with c3: st.metric("Avg Age", f"{students_df['Age'].mean():.1f}")
-            with c4: st.metric("Common BG", students_df['Blood_Group'].mode()[0])
-            st.bar_chart(students_df['Standard'].value_counts())
-
-def handle_fees_menu(menu):
-    students_df = load_students()
-    fee_df = load_fee_structure()
-    pay_df = load_fee_payments()
-    if menu == "💵 Collect Payment":
-        st.header("💵 Collect Payment")
-        if students_df.empty:
-            st.warning("Add students first!")
-            return
-        with st.form("pay_form"):
-            sid = st.selectbox("Student *", students_df['Student_ID'].tolist())
-            if sid:
-                st_d = students_df[students_df['Student_ID'] == sid].iloc[0]
-                st.info(f"**{st_d['Name']}** - {st_d['Standard']}")
-            ftype = st.selectbox("Fee Type *", FEE_TYPES)
-            amt = st.number_input("Amount (₹) *", min_value=0.0, step=100.0)
-            pdate = st.date_input("Date *", datetime.now())
-            pmode = st.selectbox("Mode *", PAYMENT_MODES)
-            if st.form_submit_button("💰 Process", type="primary"):
-                if amt > 0:
-                    rno = generate_receipt_no(pay_df)
-                    new_pay = pd.DataFrame({'Receipt_No': [rno], 'Student_ID': [sid], 'Student_Name': [st_d['Name']], 'Standard': [st_d['Standard']], 'Payment_Date': [pdate], 'Amount_Paid': [amt], 'Payment_Mode': [pmode], 'Fee_Type': [ftype], 'Academic_Year': [f"{datetime.now().year}"], 'Remarks': ['']})
-                    pay_df = pd.concat([pay_df, new_pay], ignore_index=True)
-                    if save_fee_payments(pay_df):
-                        st.success(f"✅ Receipt: {rno}")
-                        st.balloons()
-    elif menu == "📋 View Payments":
-        st.header("📋 Payments")
-        if pay_df.empty:
-            st.info("No payments!")
-        else:
-            st.dataframe(pay_df, use_container_width=True)
-            buf = BytesIO()
-            with pd.ExcelWriter(buf, engine='openpyxl') as w:
-                pay_df.to_excel(w, index=False)
-            buf.seek(0)
-            st.download_button("💾 Export", buf, f"payments_{datetime.now().strftime('%Y%m%d')}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    elif menu == "🔍 Student Fee History":
-        st.header("🔍 Fee History")
-        if students_df.empty:
-            st.warning("No students!")
-        else:
-            sid = st.selectbox("Student:", students_df['Student_ID'].tolist())
-            if sid:
-                st_d = students_df[students_df['Student_ID'] == sid].iloc[0]
-                st.write(f"**{st_d['Name']}** - {st_d['Standard']}")
-                hist = pay_df[pay_df['Student_ID'] == sid]
-                if hist.empty:
-                    st.info("No history")
-                else:
-                    st.dataframe(hist)
-    elif menu == "⚙️ Fee Structure":
-        st.header("⚙️ Fee Structure")
-        if fee_df.empty:
-            st.info("No structure defined")
-        else:
-            st.dataframe(fee_df)
-        with st.form("fee_form"):
-            std = st.selectbox("Class *", STANDARDS)
-            ftype = st.selectbox("Type *", FEE_TYPES)
-            amt = st.number_input("Amount *", min_value=0.0, step=100.0)
-            if st.form_submit_button("💾 Save", type="primary"):
-                fid = generate_fee_id(fee_df)
-                new_fee = pd.DataFrame({'Fee_ID': [fid], 'Standard': [std], 'Fee_Type': [ftype], 'Amount': [amt], 'Payment_Frequency': ['Yearly'], 'Academic_Year': [f"{datetime.now().year}"]})
-                fee_df = pd.concat([fee_df, new_fee], ignore_index=True)
-                if save_fee_structure(fee_df):
-                    st.success("✅ Saved!")
-    elif menu == "📊 Fees Dashboard":
-        st.header("📊 Dashboard")
-        if pay_df.empty:
-            st.info("No data")
-        else:
-            total = pay_df['Amount_Paid'].sum()
-            st.metric("Total Collected", f"₹{total:,.2f}")
-            st.bar_chart(pay_df.groupby('Fee_Type')['Amount_Paid'].sum())
-    elif menu == "📄 Reports":
-        st.header("📄 Reports")
-        rtype = st.selectbox("Type", ["Daily", "Monthly", "Custom Date Range"])
-        if rtype == "Custom Date Range":
-            c1, c2 = st.columns(2)
-            with c1:
-                sdate = st.date_input("Start Date")
-            with c2:
-                edate = st.date_input("End Date", datetime.now())
-            if st.button("Generate", type="primary"):
-                pay_df['Payment_Date'] = pd.to_datetime(pay_df['Payment_Date'])
-                filtered = pay_df[(pay_df['Payment_Date'].dt.date >= sdate) & (pay_df['Payment_Date'].dt.date <= edate)]
-                if filtered.empty:
-                    st.warning("No data")
-                else:
-                    st.subheader(f"Report: {sdate} to {edate}")
-                    st.metric("Total", f"₹{filtered['Amount_Paid'].sum():,.2f}")
-                    st.dataframe(filtered)
-                    buf = BytesIO()
-                    with pd.ExcelWriter(buf, engine='openpyxl') as w:
-                        filtered.to_excel(w, index=False)
-                    buf.seek(0)
-                    st.download_button("💾 Download", buf, f"report_{sdate}_to_{edate}.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    elif menu == "⚠️ Defaulters":
-        st.header("⚠️ Defaulters")
-        if students_df.empty:
-            st.warning("No students!")
-        else:
-            defaulters = []
-            for _, st_d in students_df.iterrows():
-                total, paid, pend = calculate_pending_fees(st_d['Student_ID'], students_df, fee_df, pay_df)
-                if pend > 0:
-                    defaulters.append({'ID': st_d['Student_ID'], 'Name': st_d['Name'], 'Class': st_d['Standard'], 'Pending': pend})
-            if defaulters:
-                st.dataframe(pd.DataFrame(defaulters))
-            else:
-                st.success("🎉 No defaulters!")
+# ============================================================================
+# MAIN APPLICATION
+# ============================================================================
 
 def main():
-    check_url_params()
-    if not st.session_state.logged_in:
-        login_page()
-        return
-    st.markdown('<style>.dashboard-logo{position:fixed;top:70px;right:20px;z-index:999;background:white;padding:10px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);width:80px;height:80px}</style>', unsafe_allow_html=True)
-    if os.path.exists("school_logo.png"):
-        import base64
-        with open("school_logo.png", "rb") as f:
-            st.markdown(f'<div class="dashboard-logo"><img src="data:image/png;base64,{base64.b64encode(f.read()).decode()}" style="width:100%;height:100%;object-fit:contain"></div>', unsafe_allow_html=True)
-    c1, c2 = st.columns([8, 1])
-    with c1:
-        st.title("🎓 School Management System")
-    with c2:
-        if st.button("🚪 Logout"):
-            st.session_state.logged_in = False
-            st.rerun()
-    st.markdown("---")
+    # Initialize session state
+    if 'refresh' not in st.session_state:
+        st.session_state.refresh = False
+    
+    # Initialize data
     initialize_student_excel()
     initialize_fee_structure()
     initialize_fee_payments()
-    st.sidebar.markdown('''<style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
-        [data-testid="stSidebar"]{font-size:60px}
-        [data-testid="stSidebar"] label{font-size:60px !important; font-weight:800}
-        [data-testid="stSidebar"] .stRadio > label{font-size:66px !important; font-weight:900; color:#FFFFFF; text-shadow:4px 4px 8px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.7); letter-spacing:2px; -webkit-text-stroke:1px rgba(0,0,0,0.4); line-height:1.4; font-family:'Poppins', 'Arial Black', sans-serif}
-        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:72px !important; padding:22px 0; font-weight:900; text-shadow:4px 4px 8px rgba(0,0,0,0.5); -webkit-text-stroke:1px rgba(0,0,0,0.4); line-height:1.5; font-family:'Poppins', 'Arial Black', sans-serif; text-transform:none; margin:8px 0}
-        [data-testid="stSidebar"] h1{font-size:48px !important; font-weight:800}
-    </style>''', unsafe_allow_html=True)
-    st.sidebar.title("📚 Navigation")
-    main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
-    if main_menu == "👨‍🎓 Student Management":
-        student_menu = st.sidebar.radio("Operations:", ["📊 View Students", "➕ Add Student", "✏️ Update Student", "🗑️ Delete Student", "📥 Import Students", "📈 Student Analytics"])
-        handle_student_menu(student_menu)
+    
+    # ========================================================================
+    # SIDEBAR WITH ENHANCED MENU STYLING
+    # ========================================================================
+    st.sidebar.markdown("""---""")
+    
+    st.sidebar.title("📚 School Management")
+    
+    # Main menu
+    st.sidebar.markdown("<div style='font-size:80px; font-weight:900; color:white; text-shadow: 5px 5px 10px rgba(0,0,0,0.6);'>🎓 MAIN MENU</div>", unsafe_allow_html=True)
+    
+    main_menu = st.sidebar.radio(
+        "Select Main Option:",
+        ["📊 Dashboard", "👥 Students Management"],
+        label_visibility="collapsed"
+    )
+    
+    # Operations menu
+    st.sidebar.markdown("<div style='font-size:80px; font-weight:900; color:white; text-shadow: 5px 5px 10px rgba(0,0,0,0.6); margin-top: 30px;'>⚙️ OPERATIONS</div>", unsafe_allow_html=True)
+    
+    if main_menu == "📊 Dashboard":
+        operations = st.sidebar.radio(
+            "Select Operation:",
+            ["📈 Overview", "💰 Fee Management", "📊 Reports"],
+            label_visibility="collapsed"
+        )
     else:
-        fees_menu = st.sidebar.radio("Operations:", ["💵 Collect Payment", "📋 View Payments", "🔍 Student Fee History", "⚙️ Fee Structure", "📊 Fees Dashboard", "📄 Reports", "⚠️ Defaulters"])
-        handle_fees_menu(fees_menu)
+        operations = st.sidebar.radio(
+            "Select Operation:",
+            ["📊 View Students", "➕ Add Student", "✏️ Update Student", "🗑️ Delete Student", "📥 Import from Excel"],
+            label_visibility="collapsed"
+        )
+    
+    st.sidebar.markdown("---")
+    
+    # ========================================================================
+    # MAIN CONTENT AREA
+    # ========================================================================
+    
+    st.markdown("<h1>📚 School Management System</h1>", unsafe_allow_html=True)
+    
+    # Dashboard
+    if main_menu == "📊 Dashboard":
+        if operations == "📈 Overview":
+            col1, col2, col3 = st.columns(3)
+            
+            students_df = pd.read_excel('students.xlsx')
+            payments_df = pd.read_excel('fee_payments.xlsx')
+            
+            with col1:
+                st.metric("Total Students", len(students_df))
+            with col2:
+                total_fees = payments_df['Amount_Paid'].sum() if len(payments_df) > 0 else 0
+                st.metric("Total Fees Collected", f"₹{total_fees:,.2f}")
+            with col3:
+                pending_payments = len(payments_df[payments_df['Status'] == 'Pending']) if len(payments_df) > 0 else 0
+                st.metric("Pending Payments", pending_payments)
+            
+            st.markdown("### 📊 Student Distribution by Standard")
+            if len(students_df) > 0:
+                standard_dist = students_df['Standard'].value_counts().sort_index()
+                st.bar_chart(standard_dist)
+        
+        elif operations == "💰 Fee Management":
+            st.markdown("### 💰 Fee Structure Management")
+            fee_df = pd.read_excel('fee_structure.xlsx')
+            st.dataframe(fee_df, use_container_width=True)
+            
+            st.markdown("### 📝 Record Payment")
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                students_df = pd.read_excel('students.xlsx')
+                student_names = students_df['Name'].tolist()
+                selected_student = st.selectbox("Select Student", student_names)
+            with col2:
+                month = st.selectbox("Month", ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
+            with col3:
+                year = st.number_input("Year", value=datetime.now().year, min_value=2020)
+            
+            amount = st.number_input("Amount (₹)", min_value=0.0)
+            
+            if st.button("Record Payment"):
+                payments_df = pd.read_excel('fee_payments.xlsx')
+                student_id = students_df[students_df['Name'] == selected_student]['Student_ID'].values[0]
+                new_payment = {
+                    'Payment_ID': len(payments_df) + 1,
+                    'Student_ID': student_id,
+                    'Month': month,
+                    'Year': year,
+                    'Amount_Paid': amount,
+                    'Payment_Date': datetime.now().date(),
+                    'Status': 'Paid'
+                }
+                payments_df = pd.concat([payments_df, pd.DataFrame([new_payment])], ignore_index=True)
+                save_to_excel(payments_df, 'fee_payments.xlsx', 'Payments')
+                st.success("✅ Payment recorded successfully!")
+    
+    # Students Management
+    else:
+        if operations == "📊 View Students":
+            st.markdown("### 👥 All Students")
+            students_df = pd.read_excel('students.xlsx')
+            if len(students_df) > 0:
+                st.dataframe(students_df, use_container_width=True)
+            else:
+                st.info("No students found. Add students to get started!")
+        
+        elif operations == "➕ Add Student":
+            st.markdown("### ➕ Add New Student")
+            with st.form("add_student_form"):
+                col1, col2 = st.columns(2)
+                with col1:
+                    name = st.text_input("Student Name")
+                    standard = st.number_input("Standard", min_value=1, max_value=12)
+                with col2:
+                    blood_group = st.selectbox("Blood Group", ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"])
+                    age = st.number_input("Age", min_value=3, max_value=18)
+                
+                address = st.text_area("Address")
+                aadhar = st.text_input("Aadhar Number")
+                
+                submitted = st.form_submit_button("Add Student")
+                
+                if submitted:
+                    if name and address and aadhar:
+                        students_df = pd.read_excel('students.xlsx')
+                        new_student = {
+                            'Student_ID': get_next_student_id(),
+                            'Name': name,
+                            'Standard': standard,
+                            'Blood_Group': blood_group,
+                            'Address': address,
+                            'Aadhar_Details': aadhar,
+                            'Age': age
+                        }
+                        students_df = pd.concat([students_df, pd.DataFrame([new_student])], ignore_index=True)
+                        save_to_excel(students_df, 'students.xlsx', 'Students')
+                        st.success(f"✅ Student {name} added successfully with ID: {new_student['Student_ID']}")
+                    else:
+                        st.error("❌ Please fill all required fields!")
+        
+        elif operations == "✏️ Update Student":
+            st.markdown("### ✏️ Update Student Information")
+            students_df = pd.read_excel('students.xlsx')
+            
+            if len(students_df) > 0:
+                student_names = students_df['Name'].tolist()
+                selected_student = st.selectbox("Select Student", student_names)
+                student_data = students_df[students_df['Name'] == selected_student].iloc[0]
+                
+                with st.form("update_student_form"):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        new_name = st.text_input("Student Name", value=student_data['Name'])
+                        new_standard = st.number_input("Standard", value=int(student_data['Standard']), min_value=1, max_value=12)
+                    with col2:
+                        new_blood_group = st.selectbox("Blood Group", ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"], index=["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].index(student_data['Blood_Group']))
+                        new_age = st.number_input("Age", value=int(student_data['Age']), min_value=3, max_value=18)
+                    
+                    new_address = st.text_area("Address", value=student_data['Address'])
+                    new_aadhar = st.text_input("Aadhar Number", value=student_data['Aadhar_Details'])
+                    
+                    submitted = st.form_submit_button("Update Student")
+                    
+                    if submitted:
+                        students_df.loc[students_df['Name'] == selected_student, 'Name'] = new_name
+                        students_df.loc[students_df['Name'] == new_name, 'Standard'] = new_standard
+                        students_df.loc[students_df['Name'] == new_name, 'Blood_Group'] = new_blood_group
+                        students_df.loc[students_df['Name'] == new_name, 'Age'] = new_age
+                        students_df.loc[students_df['Name'] == new_name, 'Address'] = new_address
+                        students_df.loc[students_df['Name'] == new_name, 'Aadhar_Details'] = new_aadhar
+                        save_to_excel(students_df, 'students.xlsx', 'Students')
+                        st.success("✅ Student updated successfully!")
+            else:
+                st.info("No students found!")
+        
+        elif operations == "🗑️ Delete Student":
+            st.markdown("### 🗑️ Delete Student")
+            students_df = pd.read_excel('students.xlsx')
+            
+            if len(students_df) > 0:
+                student_names = students_df['Name'].tolist()
+                selected_student = st.selectbox("Select Student to Delete", student_names)
+                
+                if st.button("Delete Student", type="secondary"):
+                    students_df = students_df[students_df['Name'] != selected_student]
+                    save_to_excel(students_df, 'students.xlsx', 'Students')
+                    st.success(f"✅ Student {selected_student} deleted successfully!")
+            else:
+                st.info("No students found!")
+        
+        elif operations == "📥 Import from Excel":
+            st.markdown("### 📥 Import Students from Excel")
+            uploaded_file = st.file_uploader("Upload Excel file", type=['xlsx'])
+            
+            if uploaded_file:
+                try:
+                    imported_df = pd.read_excel(uploaded_file)
+                    st.markdown("### Preview of data to import:")
+                    st.dataframe(imported_df, use_container_width=True)
+                    
+                    if st.button("Import Students"):
+                        students_df = pd.read_excel('students.xlsx')
+                        
+                        # Add Student IDs if not present
+                        if 'Student_ID' not in imported_df.columns:
+                            start_id = get_next_student_id()
+                            imported_df.insert(0, 'Student_ID', range(start_id, start_id + len(imported_df)))
+                        
+                        students_df = pd.concat([students_df, imported_df], ignore_index=True)
+                        save_to_excel(students_df, 'students.xlsx', 'Students')
+                        st.success(f"✅ {len(imported_df)} students imported successfully!")
+                
+                except Exception as e:
+                    st.error(f"❌ Error importing file: {str(e)}")
 
 if __name__ == "__main__":
     main()
