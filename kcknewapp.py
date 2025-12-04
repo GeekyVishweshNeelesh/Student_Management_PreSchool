@@ -475,9 +475,9 @@ def main():
     st.sidebar.markdown('''<style>
         [data-testid="stSidebar"]{font-size:32px}
         [data-testid="stSidebar"] label{font-size:32px !important}
-        [data-testid="stSidebar"] .stRadio > label{font-size:36px !important; font-weight:bold}
+        [data-testid="stSidebar"] .stRadio > label{font-size:42px !important; font-weight:bold; color:#1f77b4}
         [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:32px !important; padding:10px 0}
-        [data-testid="stSidebar"] h1{font-size:40px !important}
+        [data-testid="stSidebar"] h1{font-size:44px !important}
     </style>''', unsafe_allow_html=True)
     st.sidebar.title("📚 Navigation")
     main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
