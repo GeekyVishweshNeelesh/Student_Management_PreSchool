@@ -478,11 +478,11 @@ def main():
     initialize_fee_structure()
     initialize_fee_payments()
     st.sidebar.markdown('''<style>
-        [data-testid="stSidebar"]{font-size:36px}
-        [data-testid="stSidebar"] label{font-size:36px !important; font-weight:700}
-        [data-testid="stSidebar"] .stRadio > label{font-size:52px !important; font-weight:900; color:#FFFFFF; text-shadow:3px 3px 6px rgba(0,0,0,0.4), 1px 1px 0px rgba(0,0,0,0.6); letter-spacing:1px; -webkit-text-stroke:0.5px rgba(0,0,0,0.3)}
-        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:52px !important; padding:14px 0; font-weight:900; text-shadow:2px 2px 4px rgba(0,0,0,0.3); -webkit-text-stroke:0.5px rgba(0,0,0,0.2)}
-        [data-testid="stSidebar"] h1{font-size:38px !important; font-weight:700}
+        [data-testid="stSidebar"]{font-size:44px}
+        [data-testid="stSidebar"] label{font-size:44px !important; font-weight:800}
+        [data-testid="stSidebar"] .stRadio > label{font-size:60px !important; font-weight:900; color:#FFFFFF; text-shadow:4px 4px 8px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.7); letter-spacing:1.5px; -webkit-text-stroke:0.8px rgba(0,0,0,0.4); line-height:1.3}
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:60px !important; padding:18px 0; font-weight:900; text-shadow:3px 3px 6px rgba(0,0,0,0.4); -webkit-text-stroke:0.7px rgba(0,0,0,0.3); line-height:1.3}
+        [data-testid="stSidebar"] h1{font-size:48px !important; font-weight:800}
     </style>''', unsafe_allow_html=True)
     st.sidebar.title("📚 Navigation")
     main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
