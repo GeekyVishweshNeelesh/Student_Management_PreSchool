@@ -143,15 +143,20 @@ def calculate_pending_fees(student_id, students_df, fee_structure_df, payments_d
     return total_fees, total_paid, total_fees - total_paid
 
 def login_page():
-    st.markdown("""<style>.login-container{max-width:400px;margin:50px auto;padding:40px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}.login-title{color:white;text-align:center;font-size:32px;font-weight:bold;margin-bottom:30px}.login-subtitle{color:#e0e0e0;text-align:center;margin-bottom:30px}.logo-container{text-align:center;margin-bottom:30px;background:white;padding:20px;border-radius:10px}.logo-placeholder{width:150px;height:150px;margin:0 auto;background:#f0f0f0;border:3px dashed #999;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#666;text-align:center}</style>""", unsafe_allow_html=True)
+    st.markdown("""<style>
+        .stApp > header {visibility: hidden;}
+        .login-container{max-width:400px;margin:50px auto;padding:40px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+        .login-title{color:white;text-align:center;font-size:32px;font-weight:bold;margin-bottom:30px}
+        .login-subtitle{color:#e0e0e0;text-align:center;margin-bottom:30px}
+    </style>""", unsafe_allow_html=True)
+    st.markdown('<div style="height:20px"></div>', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        st.markdown('<div class="logo-container">', unsafe_allow_html=True)
         if os.path.exists("school_logo.png"):
             st.image("school_logo.png", width=150)
         else:
-            st.markdown('<div class="logo-placeholder"><div><p style="margin:0;">🏫</p><p style="margin:5px 0 0 0;font-size:12px;">School Logo</p><p style="margin:5px 0 0 0;font-size:10px;">Place school_logo.png here</p></div></div>', unsafe_allow_html=True)
-        st.markdown('</div><div class="login-container"><p class="login-title">🎓 School Management</p><p class="login-subtitle">Admin Login</p>', unsafe_allow_html=True)
+            st.markdown('<div style="text-align:center;margin-bottom:30px"><p style="font-size:80px;margin:0">🏫</p><p style="color:#666;font-size:14px">School Logo</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-container"><p class="login-title">🎓 School Management</p><p class="login-subtitle">Admin Login</p>', unsafe_allow_html=True)
         with st.form("login_form"):
             username = st.text_input("👤 Username", placeholder="Enter username")
             password = st.text_input("🔐 Password", type="password", placeholder="Enter password")
@@ -473,11 +478,11 @@ def main():
     initialize_fee_structure()
     initialize_fee_payments()
     st.sidebar.markdown('''<style>
-        [data-testid="stSidebar"]{font-size:32px}
-        [data-testid="stSidebar"] label{font-size:32px !important}
-        [data-testid="stSidebar"] .stRadio > label{font-size:42px !important; font-weight:bold; color:#1f77b4}
-        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:32px !important; padding:10px 0}
-        [data-testid="stSidebar"] h1{font-size:44px !important}
+        [data-testid="stSidebar"]{font-size:34px}
+        [data-testid="stSidebar"] label{font-size:34px !important}
+        [data-testid="stSidebar"] .stRadio > label{font-size:48px !important; font-weight:900; color:#1f77b4; text-shadow:1px 1px 2px rgba(0,0,0,0.1)}
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:34px !important; padding:12px 0; font-weight:600}
+        [data-testid="stSidebar"] h1{font-size:48px !important; font-weight:bold}
     </style>''', unsafe_allow_html=True)
     st.sidebar.title("📚 Navigation")
     main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
