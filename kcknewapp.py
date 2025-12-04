@@ -245,7 +245,6 @@ def main():
 """, unsafe_allow_html=True)
 
 st.sidebar.title("📚 Navigation")
-    st.sidebar.title("📚 Navigation")
     main_menu = st.sidebar.radio("Main Menu:", ["👨‍🎓 Student Management", "💰 Fees Management"])
     if main_menu == "👨‍🎓 Student Management":
         student_menu = st.sidebar.radio("Student Operations:", ["📊 View Students", "➕ Add Student", "✏️ Update Student", "🗑️ Delete Student", "📥 Import Students", "📈 Student Analytics"])
