@@ -479,8 +479,8 @@ def main():
     initialize_fee_payments()
     st.sidebar.markdown('''<style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
-        [data-testid="stSidebar"]{font-size:44px}
-        [data-testid="stSidebar"] label{font-size:44px !important; font-weight:800}
+        [data-testid="stSidebar"]{font-size:60px}
+        [data-testid="stSidebar"] label{font-size:60px !important; font-weight:800}
         [data-testid="stSidebar"] .stRadio > label{font-size:66px !important; font-weight:900; color:#FFFFFF; text-shadow:4px 4px 8px rgba(0,0,0,0.5), 2px 2px 0px rgba(0,0,0,0.7); letter-spacing:2px; -webkit-text-stroke:1px rgba(0,0,0,0.4); line-height:1.4; font-family:'Poppins', 'Arial Black', sans-serif}
         [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label{font-size:72px !important; padding:22px 0; font-weight:900; text-shadow:4px 4px 8px rgba(0,0,0,0.5); -webkit-text-stroke:1px rgba(0,0,0,0.4); line-height:1.5; font-family:'Poppins', 'Arial Black', sans-serif; text-transform:none; margin:8px 0}
         [data-testid="stSidebar"] h1{font-size:48px !important; font-weight:800}
