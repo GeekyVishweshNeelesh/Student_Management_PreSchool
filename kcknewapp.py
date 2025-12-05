@@ -603,7 +603,7 @@ def main():
         [data-testid="stSidebar"] .stRadio > label {
             font-size: 48px !important;
             font-weight: 900 !important;
-            color: #1f3a93 !important;
+            color: #ffffff !important;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
             letter-spacing: 1px !important;
             -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
