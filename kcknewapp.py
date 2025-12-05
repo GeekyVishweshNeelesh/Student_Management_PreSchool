@@ -120,12 +120,50 @@ def login_page():
             font-weight: bold;
             margin-bottom: 30px;
         }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo-placeholder {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
+            border: 3px dashed white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin: 0 auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .logo-img-login {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
         </style>
     """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
+        # Display school logo
+        logo_path = "school_logo.png"
+        st.markdown("<div class='logo-container'>", unsafe_allow_html=True)
+        
+        if os.path.exists(logo_path):
+            import base64
+            with open(logo_path, "rb") as f:
+                img_data = base64.b64encode(f.read()).decode()
+            st.markdown(f'<img src="data:image/png;base64,{img_data}" class="logo-img-login">', unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='logo-placeholder'>🏫</div>", unsafe_allow_html=True)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+        
         st.markdown("<div class='login-title'>🎓 School Management</div>", unsafe_allow_html=True)
         
         st.markdown("<div class='login-box'>", unsafe_allow_html=True)
@@ -540,41 +578,98 @@ def main():
     initialize_fee_structure()
     initialize_fee_payments()
     
-    # Sidebar Navigation - ENHANCED FONT SIZE
+    # Sidebar Navigation - ENHANCED BOLD AND THICK FONT
     st.sidebar.markdown('''
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700;800;900&family=Poppins:wght@700;800;900&display=swap');
         
         /* General sidebar styling */
-        [data-testid="stSidebar"]{font-size:32px}
-        [data-testid="stSidebar"] label{font-size:32px !important; font-weight:600}
-        
-        /* MAIN MENU AND OPERATIONS HEADERS - EXTRA BOLD AND LARGE */
-        [data-testid="stSidebar"] .stRadio > label {
-            font-size: 100px !important;
-            font-weight: 900 !important;
-            color: #ffffff !important;
-            text-shadow: 5px 5px 10px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.8) !important;
-            letter-spacing: 1.5px !important;
-            -webkit-text-stroke: 1px rgba(0,0,0,0.5) !important;
-            line-height: 1.2 !important;
-            font-family: 'Poppins', 'Arial Black', sans-serif !important;
-            margin: 15px 0 !important;
-            padding: 15px 0 !important;
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #1f3a93 0%, #2d5aa0 100%) !important;
         }
         
-        /* MENU ITEMS - EXTRA BOLD AND LARGE */
-        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
-            font-size: 85px !important;
-            padding: 20px 10px !important;
+        [data-testid="stSidebar"]{
+            font-size: 36px !important;
+        }
+        
+        [data-testid="stSidebar"] label {
+            font-size: 36px !important; 
             font-weight: 900 !important;
             color: #ffffff !important;
-            text-shadow: 5px 5px 10px rgba(0,0,0,0.6), 2px 2px 4px rgba(0,0,0,0.8) !important;
-            -webkit-text-stroke: 1px rgba(0,0,0,0.5) !important;
-            line-height: 1.3 !important;
-            font-family: 'Poppins', 'Arial Black', sans-serif !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+        }
+        
+        /* MAIN MENU AND OPERATIONS HEADERS - ULTRA BOLD AND LARGE */
+        [data-testid="stSidebar"] .stRadio > label {
+            font-size: 110px !important;
+            font-weight: 900 !important;
+            color: #ffffff !important;
+            text-shadow: 8px 8px 16px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.9) !important;
+            letter-spacing: 2px !important;
+            -webkit-text-stroke: 2.5px rgba(0,0,0,0.7) !important;
+            line-height: 1.1 !important;
+            font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
+            margin: 20px 0 !important;
+            padding: 20px 5px !important;
+            text-transform: uppercase !important;
+            word-wrap: break-word !important;
+            transform: scaleY(1.1) !important;
+        }
+        
+        /* MENU ITEMS - ULTRA BOLD AND LARGE */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
+            font-size: 95px !important;
+            padding: 25px 12px !important;
+            font-weight: 900 !important;
+            color: #ffffff !important;
+            text-shadow: 8px 8px 16px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.9) !important;
+            -webkit-text-stroke: 2.5px rgba(0,0,0,0.7) !important;
+            line-height: 1.25 !important;
+            font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
+            margin: 15px 0 !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            text-transform: capitalize !important;
+            font-style: normal !important;
+            transform: scaleY(1.05) !important;
+        }
+        
+        /* Menu item hover effect */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover {
+            background-color: rgba(255,255,255,0.2) !important;
+            transform: scaleY(1.08) scale(1.02) !important;
+            letter-spacing: 2px !important;
+        }
+        
+        /* Selected menu item styling */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[aria-checked="true"] {
+            background-color: rgba(255,215,0,0.3) !important;
+            border-left: 6px solid #ffd700 !important;
+            border-right: 3px solid rgba(255,215,0,0.6) !important;
+            padding-left: 12px !important;
+            box-shadow: inset 2px 2px 8px rgba(0,0,0,0.3) !important;
+        }
+        
+        /* Sidebar title styling */
+        [data-testid="stSidebar"] h1 {
+            font-size: 60px !important;
+            font-weight: 900 !important;
+            color: #ffffff !important;
+            text-shadow: 6px 6px 12px rgba(0,0,0,0.8) !important;
+            -webkit-text-stroke: 2px rgba(0,0,0,0.6) !important;
+            font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
+            margin-bottom: 20px !important;
+            letter-spacing: 1.5px !important;
+            text-transform: uppercase !important;
+        }
+        
+        /* Paragraph text in sidebar */
+        [data-testid="stSidebar"] p {
+            font-size: 32px !important;
+            font-weight: 800 !important;
+            color: #ffffff !important;
             margin: 10px 0 !important;
-            border-radius: 5px !important;
         }
         </style>
     ''', unsafe_allow_html=True)
