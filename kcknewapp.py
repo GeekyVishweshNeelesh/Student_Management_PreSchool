@@ -578,98 +578,101 @@ def main():
     initialize_fee_structure()
     initialize_fee_payments()
     
-    # Sidebar Navigation - ENHANCED BOLD AND THICK FONT
+    # Sidebar Navigation - Refined with transparent background and better sizing
     st.sidebar.markdown('''
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700;800;900&family=Poppins:wght@700;800;900&display=swap');
         
-        /* General sidebar styling */
+        /* General sidebar styling - TRANSPARENT BACKGROUND */
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #1f3a93 0%, #2d5aa0 100%) !important;
+            background: transparent !important;
         }
         
         [data-testid="stSidebar"]{
-            font-size: 36px !important;
+            font-size: 24px !important;
         }
         
         [data-testid="stSidebar"] label {
-            font-size: 36px !important; 
-            font-weight: 900 !important;
-            color: #ffffff !important;
-            text-transform: uppercase !important;
-            letter-spacing: 1px !important;
+            font-size: 24px !important; 
+            font-weight: 800 !important;
+            color: #000000 !important;
+            letter-spacing: 0.5px !important;
         }
         
-        /* MAIN MENU AND OPERATIONS HEADERS - ULTRA BOLD AND LARGE */
+        /* MAIN MENU AND OPERATIONS HEADERS - BALANCED SIZE */
         [data-testid="stSidebar"] .stRadio > label {
-            font-size: 110px !important;
+            font-size: 48px !important;
             font-weight: 900 !important;
-            color: #ffffff !important;
-            text-shadow: 8px 8px 16px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.9) !important;
-            letter-spacing: 2px !important;
-            -webkit-text-stroke: 2.5px rgba(0,0,0,0.7) !important;
-            line-height: 1.1 !important;
-            font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
-            margin: 20px 0 !important;
-            padding: 20px 5px !important;
-            text-transform: uppercase !important;
-            word-wrap: break-word !important;
-            transform: scaleY(1.1) !important;
-        }
-        
-        /* MENU ITEMS - ULTRA BOLD AND LARGE */
-        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
-            font-size: 95px !important;
-            padding: 25px 12px !important;
-            font-weight: 900 !important;
-            color: #ffffff !important;
-            text-shadow: 8px 8px 16px rgba(0,0,0,0.8), 4px 4px 8px rgba(0,0,0,0.9) !important;
-            -webkit-text-stroke: 2.5px rgba(0,0,0,0.7) !important;
-            line-height: 1.25 !important;
+            color: #1f3a93 !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
+            letter-spacing: 1px !important;
+            -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
+            line-height: 1.2 !important;
             font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
             margin: 15px 0 !important;
-            border-radius: 8px !important;
+            padding: 10px 5px !important;
+            text-transform: uppercase !important;
+            word-wrap: break-word !important;
+        }
+        
+        /* MENU ITEMS - LARGE BUT READABLE */
+        [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
+            font-size: 56px !important;
+            padding: 12px 8px !important;
+            font-weight: 900 !important;
+            color: #1f3a93 !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
+            -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
+            line-height: 1.3 !important;
+            font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
+            margin: 8px 0 !important;
+            border-radius: 6px !important;
             transition: all 0.3s ease !important;
             text-transform: capitalize !important;
-            font-style: normal !important;
-            transform: scaleY(1.05) !important;
         }
         
-        /* Menu item hover effect */
+        /* Menu item hover effect - ENHANCED */
         [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover {
-            background-color: rgba(255,255,255,0.2) !important;
-            transform: scaleY(1.08) scale(1.02) !important;
-            letter-spacing: 2px !important;
+            background-color: rgba(45, 90, 160, 0.15) !important;
+            transform: scale(1.05) !important;
+            letter-spacing: 1px !important;
+            color: #2d5aa0 !important;
+            box-shadow: 0 2px 8px rgba(45, 90, 160, 0.3) !important;
         }
         
-        /* Selected menu item styling */
+        /* Selected menu item styling - GOLD ACCENT */
         [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label[aria-checked="true"] {
-            background-color: rgba(255,215,0,0.3) !important;
-            border-left: 6px solid #ffd700 !important;
-            border-right: 3px solid rgba(255,215,0,0.6) !important;
-            padding-left: 12px !important;
-            box-shadow: inset 2px 2px 8px rgba(0,0,0,0.3) !important;
+            background-color: rgba(255, 215, 0, 0.2) !important;
+            border-left: 4px solid #ffd700 !important;
+            padding-left: 10px !important;
+            color: #1f3a93 !important;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
         }
         
         /* Sidebar title styling */
         [data-testid="stSidebar"] h1 {
-            font-size: 60px !important;
+            font-size: 36px !important;
             font-weight: 900 !important;
-            color: #ffffff !important;
-            text-shadow: 6px 6px 12px rgba(0,0,0,0.8) !important;
-            -webkit-text-stroke: 2px rgba(0,0,0,0.6) !important;
+            color: #1f3a93 !important;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
+            -webkit-text-stroke: 0.8px rgba(0,0,0,0.2) !important;
             font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
-            margin-bottom: 20px !important;
-            letter-spacing: 1.5px !important;
+            margin-bottom: 15px !important;
+            letter-spacing: 1px !important;
             text-transform: uppercase !important;
         }
         
         /* Paragraph text in sidebar */
         [data-testid="stSidebar"] p {
-            font-size: 32px !important;
-            font-weight: 800 !important;
-            color: #ffffff !important;
-            margin: 10px 0 !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            color: #333333 !important;
+            margin: 8px 0 !important;
+        }
+        
+        /* Streamlit radio button styling */
+        [data-testid="stSidebar"] .stRadio {
+            background-color: transparent !important;
         }
         </style>
     ''', unsafe_allow_html=True)
