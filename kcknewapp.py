@@ -166,29 +166,22 @@ def login_page():
         
         st.markdown("<div class='login-title'>🎓 School Management</div>", unsafe_allow_html=True)
         
-        st.markdown("<div class='login-box'>", unsafe_allow_html=True)
-        
         username = st.text_input("👤 Username", key="username_input")
         password = st.text_input("🔐 Password", type="password", key="password_input")
         
-        col_login, col_space = st.columns([1, 1])
-        
-        with col_login:
-            if st.button("🔓 Login", use_container_width=True):
-                if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-                    st.session_state.logged_in = True
-                    st.session_state.login_attempts = 0
-                    st.rerun()
+        if st.button("🔓 Login", use_container_width=True):
+            if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+                st.session_state.logged_in = True
+                st.session_state.login_attempts = 0
+                st.rerun()
+            else:
+                st.session_state.login_attempts += 1
+                remaining = 5 - st.session_state.login_attempts
+                
+                if st.session_state.login_attempts >= 5:
+                    st.error("🚫 Too many failed attempts. Please contact administrator.")
                 else:
-                    st.session_state.login_attempts += 1
-                    remaining = 5 - st.session_state.login_attempts
-                    
-                    if st.session_state.login_attempts >= 5:
-                        st.error("🚫 Too many failed attempts. Please contact administrator.")
-                    else:
-                        st.error(f"❌ Invalid credentials! {remaining} attempts remaining.")
-        
-        st.markdown('</div>', unsafe_allow_html=True)
+                    st.error(f"❌ Invalid credentials! {remaining} attempts remaining.")
         st.markdown("---")
         st.info("**Default Credentials:**\n\n👤 Username: admin\n\n🔐 Password: ADMIN001")
 
@@ -595,7 +588,7 @@ def main():
         [data-testid="stSidebar"] label {
             font-size: 24px !important; 
             font-weight: 800 !important;
-            color: #ffffff !important;
+            color: #000000 !important;
             letter-spacing: 0.5px !important;
         }
         
@@ -603,7 +596,7 @@ def main():
         [data-testid="stSidebar"] .stRadio > label {
             font-size: 48px !important;
             font-weight: 900 !important;
-            color: #ffffff !important;
+            color: #1f3a93 !important;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
             letter-spacing: 1px !important;
             -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
@@ -620,7 +613,7 @@ def main():
             font-size: 56px !important;
             padding: 12px 8px !important;
             font-weight: 900 !important;
-            color: #ffffff !important;
+            color: #1f3a93 !important;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
             -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
             line-height: 1.3 !important;
@@ -636,7 +629,7 @@ def main():
             background-color: rgba(45, 90, 160, 0.15) !important;
             transform: scale(1.05) !important;
             letter-spacing: 1px !important;
-            color: #ffffff !important;
+            color: #2d5aa0 !important;
             box-shadow: 0 2px 8px rgba(45, 90, 160, 0.3) !important;
         }
         
@@ -645,7 +638,7 @@ def main():
             background-color: rgba(255, 215, 0, 0.2) !important;
             border-left: 4px solid #ffd700 !important;
             padding-left: 10px !important;
-            color: #ffffff !important;
+            color: #1f3a93 !important;
             box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
         }
         
@@ -653,7 +646,7 @@ def main():
         [data-testid="stSidebar"] h1 {
             font-size: 36px !important;
             font-weight: 900 !important;
-            color: #ffffff !important;
+            color: #1f3a93 !important;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
             -webkit-text-stroke: 0.8px rgba(0,0,0,0.2) !important;
             font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
@@ -666,7 +659,7 @@ def main():
         [data-testid="stSidebar"] p {
             font-size: 18px !important;
             font-weight: 700 !important;
-            color: #ffffff !important;
+            color: #333333 !important;
             margin: 8px 0 !important;
         }
         
