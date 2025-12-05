@@ -666,7 +666,7 @@ def main():
         [data-testid="stSidebar"] p {
             font-size: 18px !important;
             font-weight: 700 !important;
-            color: #333333 !important;
+            color: #ffffff !important;
             margin: 8px 0 !important;
         }
         
