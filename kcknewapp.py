@@ -588,7 +588,7 @@ def main():
         [data-testid="stSidebar"] label {
             font-size: 24px !important; 
             font-weight: 800 !important;
-            color: #000000 !important;
+            color: #ffffff !important;
             letter-spacing: 0.5px !important;
         }
         
@@ -596,7 +596,7 @@ def main():
         [data-testid="stSidebar"] .stRadio > label {
             font-size: 48px !important;
             font-weight: 900 !important;
-            color: #1f3a93 !important;
+            color: #ffffff !important;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
             letter-spacing: 1px !important;
             -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
@@ -613,7 +613,7 @@ def main():
             font-size: 56px !important;
             padding: 12px 8px !important;
             font-weight: 900 !important;
-            color: #1f3a93 !important;
+            color: #ffffff !important;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
             -webkit-text-stroke: 1px rgba(0,0,0,0.3) !important;
             line-height: 1.3 !important;
@@ -629,7 +629,7 @@ def main():
             background-color: rgba(45, 90, 160, 0.15) !important;
             transform: scale(1.05) !important;
             letter-spacing: 1px !important;
-            color: #2d5aa0 !important;
+            color: #ffffff !important;
             box-shadow: 0 2px 8px rgba(45, 90, 160, 0.3) !important;
         }
         
@@ -638,7 +638,7 @@ def main():
             background-color: rgba(255, 215, 0, 0.2) !important;
             border-left: 4px solid #ffd700 !important;
             padding-left: 10px !important;
-            color: #1f3a93 !important;
+            color: #ffffff !important;
             box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3) !important;
         }
         
@@ -646,7 +646,7 @@ def main():
         [data-testid="stSidebar"] h1 {
             font-size: 36px !important;
             font-weight: 900 !important;
-            color: #1f3a93 !important;
+            color: #ffffff !important;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.1) !important;
             -webkit-text-stroke: 0.8px rgba(0,0,0,0.2) !important;
             font-family: 'Poppins', 'Arial Black', 'Roboto Black', sans-serif !important;
@@ -659,7 +659,7 @@ def main():
         [data-testid="stSidebar"] p {
             font-size: 18px !important;
             font-weight: 700 !important;
-            color: #333333 !important;
+            color: #ffffff !important;
             margin: 8px 0 !important;
         }
         
