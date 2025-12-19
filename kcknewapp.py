@@ -582,6 +582,10 @@ def main():
         login_page()
         return
     
+    # Initialize device_mode if not already set
+    if 'device_mode' not in st.session_state:
+        st.session_state.device_mode = 'desktop'
+    
     # Dark Theme Styling - BLACK BACKGROUND
     st.markdown("""
         <style>
@@ -856,9 +860,6 @@ def main():
     # Device Switcher Section - HORIZONTAL (Full Width)
     st.sidebar.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
     st.sidebar.markdown("### 📱 View Mode")
-    
-    if 'device_mode' not in st.session_state:
-        st.session_state.device_mode = 'desktop'
     
     # Full width buttons - stacked vertically
     if st.sidebar.button("🖥️ Desktop", key="btn_desktop", use_container_width=True):
