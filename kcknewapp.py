@@ -555,6 +555,50 @@ def main():
         login_page()
         return
     
+    # Dark Theme Styling - BLACK BACKGROUND
+    st.markdown("""
+        <style>
+        /* Main background - BLACK */
+        .main {
+            background-color: #1a1a1a !important;
+        }
+        
+        /* App container - BLACK */
+        [data-testid="stAppViewContainer"] {
+            background-color: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        
+        /* Headers - WHITE TEXT */
+        h1, h2, h3, h4, h5, h6 {
+            color: #ffffff !important;
+        }
+        
+        /* Text - WHITE */
+        p, span, label {
+            color: #ffffff !important;
+        }
+        
+        /* Input fields - DARK BACKGROUND */
+        input, textarea, select {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+            border-color: #444444 !important;
+        }
+        
+        /* Dataframe - DARK */
+        [data-testid="stDataFrame"] {
+            background-color: #2a2a2a !important;
+        }
+        
+        /* Info/Success/Error boxes */
+        [data-testid="stAlert"] {
+            background-color: #2a2a2a !important;
+            color: #ffffff !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    
     # Dashboard header
     col1, col2 = st.columns([10, 1])
     with col1:
@@ -571,14 +615,14 @@ def main():
     initialize_fee_structure()
     initialize_fee_payments()
     
-    # Sidebar Navigation - Refined with no glassmorphism + Device Switcher
+    # Sidebar Navigation - DARK THEME (BLACK BACKGROUND)
     st.sidebar.markdown('''
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700;800;900&family=Poppins:wght@700;800;900&display=swap');
         
-        /* General sidebar styling - SOLID BACKGROUND, NO GLASSMORPHISM */
+        /* General sidebar styling - BLACK BACKGROUND, NO GLASSMORPHISM */
         [data-testid="stSidebar"] {
-            background: #ffffff !important;
+            background: #1a1a1a !important;
             backdrop-filter: none !important;
         }
         
