@@ -755,26 +755,22 @@ def main():
         </style>
     ''', unsafe_allow_html=True)
     
-    # Device Switcher Section
+    # Device Switcher Section - HORIZONTAL (Full Width)
     st.sidebar.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
     st.sidebar.markdown("### 📱 View Mode")
-    
-    col_dev1, col_dev2, col_dev3 = st.sidebar.columns(3)
     
     if 'device_mode' not in st.session_state:
         st.session_state.device_mode = 'desktop'
     
-    with col_dev1:
-        if st.button("🖥️ Desktop", key="btn_desktop", use_container_width=True):
-            st.session_state.device_mode = 'desktop'
+    # Full width buttons - stacked vertically
+    if st.sidebar.button("🖥️ Desktop", key="btn_desktop", use_container_width=True):
+        st.session_state.device_mode = 'desktop'
     
-    with col_dev2:
-        if st.button("📱 Tablet", key="btn_tablet", use_container_width=True):
-            st.session_state.device_mode = 'tablet'
+    if st.sidebar.button("📱 Tablet", key="btn_tablet", use_container_width=True):
+        st.session_state.device_mode = 'tablet'
     
-    with col_dev3:
-        if st.button("📲 Mobile", key="btn_mobile", use_container_width=True):
-            st.session_state.device_mode = 'mobile'
+    if st.sidebar.button("📲 Mobile", key="btn_mobile", use_container_width=True):
+        st.session_state.device_mode = 'mobile'
     
     st.sidebar.markdown(f"**Current Mode:** {st.session_state.device_mode.upper()}", unsafe_allow_html=True)
     st.sidebar.markdown("---")
