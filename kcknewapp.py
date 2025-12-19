@@ -194,7 +194,13 @@ def view_students():
     students_df = initialize_student_excel()
     
     if len(students_df) > 0:
-        st.dataframe(students_df, use_container_width=True)
+        # Responsive column display based on device mode
+        if st.session_state.device_mode == 'desktop':
+            st.dataframe(students_df, use_container_width=True, height=600)
+        elif st.session_state.device_mode == 'tablet':
+            st.dataframe(students_df, use_container_width=True, height=400)
+        else:  # mobile
+            st.dataframe(students_df, use_container_width=True, height=300)
         
         # Download button
         csv = students_df.to_csv(index=False)
@@ -211,14 +217,25 @@ def add_student():
     st.header("➕ Add New Student")
     
     with st.form("add_student_form"):
-        col1, col2 = st.columns(2)
+        # Responsive column layout based on device mode
+        if st.session_state.device_mode == 'desktop':
+            col1, col2 = st.columns(2)
+        elif st.session_state.device_mode == 'tablet':
+            col1, col2 = st.columns(2)
+        else:  # mobile
+            col1, col2 = st.columns([1])  # Single column
         
         with col1:
             name = st.text_input("Student Name *")
             age = st.selectbox("Age *", AGE_OPTIONS)
             blood_group = st.selectbox("Blood Group *", ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"])
         
-        with col2:
+        if st.session_state.device_mode != 'mobile':
+            with col2:
+                standard = st.selectbox("Standard *", STANDARDS)
+                father_phone = st.text_input("Father's Phone Number *")
+                mother_phone = st.text_input("Mother's Phone Number *")
+        else:
             standard = st.selectbox("Standard *", STANDARDS)
             father_phone = st.text_input("Father's Phone Number *")
             mother_phone = st.text_input("Mother's Phone Number *")
@@ -226,7 +243,7 @@ def add_student():
         address = st.text_area("Address *")
         aadhar = st.text_input("Aadhar Details (12 digits) *")
         
-        submitted = st.form_submit_button("➕ Add Student")
+        submitted = st.form_submit_button("➕ Add Student", use_container_width=True)
         
         if submitted:
             if not all([name, address, aadhar, father_phone, mother_phone]):
@@ -267,14 +284,24 @@ def update_student():
     student_data = students_df[students_df['Name'] == selected_student].iloc[0]
     
     with st.form("update_student_form"):
-        col1, col2 = st.columns(2)
+        # Responsive layout
+        if st.session_state.device_mode != 'mobile':
+            col1, col2 = st.columns(2)
+        else:
+            col1 = st.container()
+            col2 = None
         
         with col1:
             new_name = st.text_input("Student Name", value=student_data['Name'])
             new_age = st.selectbox("Age", AGE_OPTIONS, index=AGE_OPTIONS.index(student_data['Age']))
             new_blood = st.selectbox("Blood Group", ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"], index=["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].index(student_data['Blood_Group']))
         
-        with col2:
+        if col2:
+            with col2:
+                new_standard = st.selectbox("Standard", STANDARDS, index=STANDARDS.index(student_data['Standard']))
+                new_father_phone = st.text_input("Father's Phone", value=str(student_data['Father_Phone']))
+                new_mother_phone = st.text_input("Mother's Phone", value=str(student_data['Mother_Phone']))
+        else:
             new_standard = st.selectbox("Standard", STANDARDS, index=STANDARDS.index(student_data['Standard']))
             new_father_phone = st.text_input("Father's Phone", value=str(student_data['Father_Phone']))
             new_mother_phone = st.text_input("Mother's Phone", value=str(student_data['Mother_Phone']))
@@ -282,7 +309,7 @@ def update_student():
         new_address = st.text_area("Address", value=student_data['Address'])
         new_aadhar = st.text_input("Aadhar Details", value=student_data['Aadhar_Details'])
         
-        submitted = st.form_submit_button("✅ Update Student")
+        submitted = st.form_submit_button("✅ Update Student", use_container_width=True)
         
         if submitted:
             if not validate_aadhar(new_aadhar):
@@ -598,6 +625,77 @@ def main():
         }
         </style>
     """, unsafe_allow_html=True)
+    
+    # RESPONSIVE LAYOUT BASED ON DEVICE MODE
+    if st.session_state.device_mode == 'desktop':
+        # DESKTOP VIEW - Full Width
+        st.markdown("""
+            <style>
+            /* Desktop - Full width, large fonts */
+            body { font-size: 16px !important; }
+            h1 { font-size: 48px !important; }
+            h2 { font-size: 36px !important; }
+            h3 { font-size: 28px !important; }
+            .stButton button { font-size: 16px !important; padding: 12px 24px !important; }
+            .stSelectbox { font-size: 16px !important; }
+            .stTextInput input { font-size: 16px !important; }
+            [data-testid="stMetric"] { font-size: 18px !important; }
+            </style>
+        """, unsafe_allow_html=True)
+        max_width = 1400
+        col_ratio_main = [3, 1]
+        col_ratio_2 = [1, 1]
+        form_cols = 2
+        font_size = "large"
+        padding = "20px"
+        
+    elif st.session_state.device_mode == 'tablet':
+        # TABLET VIEW - Medium Width
+        st.markdown("""
+            <style>
+            /* Tablet - Medium width, medium fonts */
+            body { font-size: 14px !important; }
+            h1 { font-size: 36px !important; }
+            h2 { font-size: 28px !important; }
+            h3 { font-size: 22px !important; }
+            .stButton button { font-size: 14px !important; padding: 10px 20px !important; }
+            .stSelectbox { font-size: 14px !important; }
+            .stTextInput input { font-size: 14px !important; }
+            [data-testid="stMetric"] { font-size: 14px !important; }
+            </style>
+        """, unsafe_allow_html=True)
+        max_width = 900
+        col_ratio_main = [2, 1]
+        col_ratio_2 = [1, 1]
+        form_cols = 2
+        font_size = "medium"
+        padding = "15px"
+        
+    else:  # mobile
+        # MOBILE VIEW - Narrow Width
+        st.markdown("""
+            <style>
+            /* Mobile - Narrow width, small fonts */
+            body { font-size: 12px !important; }
+            h1 { font-size: 28px !important; }
+            h2 { font-size: 20px !important; }
+            h3 { font-size: 16px !important; }
+            .stButton button { font-size: 12px !important; padding: 8px 16px !important; }
+            .stSelectbox { font-size: 12px !important; }
+            .stTextInput input { font-size: 12px !important; }
+            [data-testid="stMetric"] { font-size: 12px !important; }
+            </style>
+        """, unsafe_allow_html=True)
+        max_width = 600
+        col_ratio_main = [1, 0]  # Full width, no sidebar in mobile
+        col_ratio_2 = [1]  # Single column
+        form_cols = 1  # Single column forms
+        font_size = "small"
+        padding = "10px"
+    
+    # Display current device mode
+    mode_indicator = f"📊 **Current Layout:** {st.session_state.device_mode.upper()}"
+    st.markdown(f"<div style='padding: {padding}; background: #2a2a2a; border-radius: 8px; margin-bottom: 20px;'>{mode_indicator}</div>", unsafe_allow_html=True)
     
     # Dashboard header
     col1, col2 = st.columns([10, 1])
