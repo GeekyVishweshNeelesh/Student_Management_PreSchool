@@ -571,14 +571,15 @@ def main():
     initialize_fee_structure()
     initialize_fee_payments()
     
-    # Sidebar Navigation - Refined with transparent background and better sizing
+    # Sidebar Navigation - Refined with no glassmorphism + Device Switcher
     st.sidebar.markdown('''
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700;800;900&family=Poppins:wght@700;800;900&display=swap');
         
-        /* General sidebar styling - TRANSPARENT BACKGROUND */
+        /* General sidebar styling - SOLID BACKGROUND, NO GLASSMORPHISM */
         [data-testid="stSidebar"] {
-            background: transparent !important;
+            background: #ffffff !important;
+            backdrop-filter: none !important;
         }
         
         [data-testid="stSidebar"]{
@@ -667,8 +668,72 @@ def main():
         [data-testid="stSidebar"] .stRadio {
             background-color: transparent !important;
         }
+        
+        /* Device Switcher Styling */
+        .device-switcher {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .device-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 60px;
+        }
+        
+        .device-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+        
+        .device-btn.active {
+            background: #ffd700;
+            color: #667eea;
+            border-color: #ffd700;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+        }
         </style>
     ''', unsafe_allow_html=True)
+    
+    # Device Switcher Section
+    st.sidebar.markdown("<div style='margin-bottom: 20px;'></div>", unsafe_allow_html=True)
+    st.sidebar.markdown("### 📱 View Mode")
+    
+    col_dev1, col_dev2, col_dev3 = st.sidebar.columns(3)
+    
+    if 'device_mode' not in st.session_state:
+        st.session_state.device_mode = 'desktop'
+    
+    with col_dev1:
+        if st.button("🖥️ Desktop", key="btn_desktop", use_container_width=True):
+            st.session_state.device_mode = 'desktop'
+    
+    with col_dev2:
+        if st.button("📱 Tablet", key="btn_tablet", use_container_width=True):
+            st.session_state.device_mode = 'tablet'
+    
+    with col_dev3:
+        if st.button("📲 Mobile", key="btn_mobile", use_container_width=True):
+            st.session_state.device_mode = 'mobile'
+    
+    st.sidebar.markdown(f"**Current Mode:** {st.session_state.device_mode.upper()}", unsafe_allow_html=True)
+    st.sidebar.markdown("---")
     
     st.sidebar.title("📚 Navigation")
     
